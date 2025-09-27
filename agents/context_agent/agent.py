@@ -1,12 +1,29 @@
 from google.adk.agents import Agent
 
+from .subagents.quests.agent import quests_agent
+
+dummy_json = """
+{
+  "type": "quest_request",
+  "questType": "biodiversity",
+  "plants": ["Seaweed", "Kelp", "Algae"],
+  "prey": ["Small Fish", "Shrimp", "Plankton"],
+  "predators": ["Shark", "Seal", "Tuna"],
+  "actions": 2
+}
+"""
+
 root_agent = Agent(
-    name="greeting_agent",
-    # https://ai.google.dev/gemini-api/docs/models
+    name="EcoQuestPipeline",
     model="gemini-2.0-flash",
-    description="Greeting agent",
-    instruction="""
-    You are a helpful assistant that greets the user. 
-    Ask for the user's name and greet them by name.
+    sub_agents=[quests_agent], 
+    description=
+    """
+    Biodiversity and Quest Context Agent
+    """,
+    instruction=
+    """
+    You are a Parent agent that will determine what agent the information given is best suited for. 
+    If you receive a prompt such as {dummy_json} you are to route it to the questing agent.
     """,
 )
