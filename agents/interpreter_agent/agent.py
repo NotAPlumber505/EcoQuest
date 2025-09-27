@@ -1,6 +1,7 @@
 from google.adk.agents import Agent
 
-from .subagents.quests.agent import quests_agent
+from .subagents.biodiversity.agent import biodiversity_agent
+from .subagents.facts.agent import facts_agent
 
 dummy_json = """
 {
@@ -16,10 +17,10 @@ dummy_json = """
 root_agent = Agent(
     name="EcoQuestPipeline",
     model="gemini-2.0-flash",
-    sub_agents=[quests_agent], 
+    sub_agents=[biodiversity_agent], 
     description=
     """
-    Biodiversity and Quest Context Agent
+    New Day and Quest Manager Agent
     """,
     instruction=
     f"""
