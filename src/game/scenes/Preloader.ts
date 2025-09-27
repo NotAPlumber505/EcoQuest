@@ -32,8 +32,32 @@ export class Preloader extends Scene
         //  Load the assets for the game - Replace with your own assets
         this.load.setPath('assets');
 
-        this.load.image('logo', 'logo.png');
-        this.load.image('star', 'star.png');
+        // Animal NPCs
+        this.load.image('Clownfish', 'ChloeClownfish.png');
+        this.load.image('Dolphin', 'DonnaDolphin.png');
+        this.load.image('Eel', 'EnriqueEel.png');
+        this.load.image('Octopus', 'OctaviaOctopus.png');
+        this.load.image('Shark', 'ShawnShark.png');
+        this.load.image('BlueFish', 'TropicalFishBlue.png');
+        this.load.image('RedFish', 'TropicalFishRed.png');
+        this.load.image('YellowFish', 'TropicalFishYellow.png');
+        this.load.image('Whale', 'WillyWhale.png');
+        this.load.image('Turtle', 'TeeTurtle.png');
+
+        // Backgrounds
+        this.load.image('CoralBackground', 'StockCake-Pixelated Coral Depths_1758987642.png'); // In-game background
+        this.load.image('MainMenuBackground', 'MainMenuBackgroundReef.jpg'); // Main menu background
+        this.load.image('startButton', 'StartButton.png'); // Start button for main menu
+
+        // Trash
+        this.load.image('AppleTrash', 'AppleTrash.png');
+        this.load.image('BottleTrash', 'BottleTrash.png');
+        this.load.image('DuckTrash', 'DuckTrash.png');
+        this.load.image('SodaTrash', 'SodaTrash.png');
+        this.load.image('TrashBag', 'TrashBag.png');
+        
+        // Polluted Animal NPCs (JIC)
+        this.load.image('PollutedTurtle', 'PollutedTurtle.png');
     }
 
     create ()
