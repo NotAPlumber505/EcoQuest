@@ -4,27 +4,44 @@ export default class MainMenu extends Phaser.Scene {
     }
 
     create() {
+
+        const centerX = this.sys.game.config.width as number / 2;
+        const centerY = this.sys.game.config.height as number / 2;
+
         // Background
         const MainMenuBackground = this.add.image(0,0,'MainMenuBackground').setOrigin(0);
         MainMenuBackground.setDisplaySize(this.sys.game.config.width as number, this.sys.game.config.height as number);
 
         // Title Text
-        this.add.text(400, 150, 'EcoQuest', {
+        this.add.text(centerX, centerY - 200, 'EcoQuest', {
             fontSize: '48px',
             color: '#fff'
         }).setOrigin(0.5);
 
         // Start Button
-        const startButton = this.add.image(400, 300, 'startButton').setScale(10).setInteractive()
+        const startButton = this.add.image(centerX, centerY - 75, 'startButton').setScale(8).setInteractive()
 
         startButton.on('pointerdown', () => {
-            this.scene.start('GameScene'); // Switch to scene
+            this.scene.start('Game'); // Switch to scene
+        });
+
+        //Store Button
+        const storeButton = this.add.image(centerX, centerY + 65, 'storeButton').setScale(8).setInteractive()
+
+        storeButton.on('pointerdown', () => {
+            this.scene.start('StoreScene'); // Switch to scene
         });
 
         // Instructions
-        this.add.text(400, 400, 'Click Start to Play', {
+        this.add.text(centerX, centerY + 150, 'Click Start to Play', {
             fontSize: '32px',
             color: '#fff'
         }).setOrigin(0.5);
+
+        const creditsButton = this.add.image(centerX + 420, centerY + 350, 'creditsButton').setScale(1.5).setInteractive()
+
+        creditsButton.on('pointerdown', () => {
+            this.scene.start('CreditsScene'); //Switch to credits
+        });
     }
 }

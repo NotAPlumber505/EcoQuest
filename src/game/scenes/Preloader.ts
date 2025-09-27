@@ -45,9 +45,12 @@ export class Preloader extends Scene
         this.load.image('Turtle', 'TeeTurtle.png');
 
         // Backgrounds
-        this.load.image('CoralBackground', 'StockCake-Pixelated Coral Depths_1758987642.png'); // In-game background
+        this.load.image('CoralBackground', 'StockCake-Pixelated Coral Depths_1758987642.jpg'); // In-game background
         this.load.image('MainMenuBackground', 'MainMenuBackgroundReef.jpg'); // Main menu background
         this.load.image('startButton', 'StartButton.png'); // Start button for main menu
+        this.load.image('storeButton', 'StoreButton.png'); // Store button for main menu
+        this.load.image('QuestButton', 'QuestButton.png'); //Quest button for in-game
+        this.load.image('creditsButton', 'CreditsButton.png'); //Credits button for main menu
 
         // Trash
         this.load.image('AppleTrash', 'AppleTrash.png');
@@ -58,6 +61,13 @@ export class Preloader extends Scene
         
         // Polluted Animal NPCs (JIC)
         this.load.image('PollutedTurtle', 'PollutedTurtle.png');
+
+        // Upgrades
+        this.load.image('ShellCurrency', 'ShellCurrency.png');
+        this.load.image('EnergyUpgrade', 'EnergyUpgrade.png');
+        this.load.image('ScissorsUpgrade', 'ScissorsUpgrade.png');
+        this.load.image('TrashUpgrade', 'TrashUpgrade.png');
+        // Note to self: The Fish purchase will use the BlueFish sprite.
     }
 
     create ()
