@@ -14,7 +14,7 @@ class BiodiversityAssessment(BaseModel):
     )
 
 biodiversity_agent = LlmAgent(
-    name="BiodiversityAgent",
+    name="biodiversity_agent",
     model="gemini-2.0-flash",
     instruction="""
 You are a Biodiversity Health Analyzer AI in an educational simulation about aquatic ecosystems.

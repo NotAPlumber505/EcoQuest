@@ -1,24 +1,16 @@
-from google.adk.tools.agent_tool import AgentTool
-from google.adk.agents import Agent
-from ..biodiversity import biodiversity_agent
-from ..facts import facts_agent
-from google.adk.tools.agent_tool import google_search
+from google.adk.agents import SequentialAgent, ParallelAgent
+from ...subagents.biodiversity.agent import biodiversity_agent
+from ...subagents.facts.agent import facts_agent
+from ...subagents.synthesizer.agent import synthesizer_agent
 
-orchestrator_agent = Agent(
-    name="OrchestratorAgent",
-    model="gemini-2.0-flash",
-    description="Coordinates facts and biodiversity agents, then synthesizes output.",
-    instruction="""
-You coordinate ecosystem evaluations. Call the tools to assess biodiversity and generate a marine fact. Then summarize their outputs in a single JSON.
+# Parallel processing of facts + biodiversity
+interpreter_pipeline = ParallelAgent(
+    name="InterpreterPipeline",
+    sub_agents=[facts_agent, biodiversity_agent],
+)
 
-Instructions:
-- Always call `biodiversity_agent` with the ecosystem state to get biodiversity status.
-- Always call `facts_agent` with the same input to get a fun fact.
-- Combine both outputs into a single structured JSON and return.
-""",
-    tools=[
-        AgentTool(biodiversity_agent),
-        AgentTool(facts_agent),
-        google_search,
-    ],
+# Sequential flow: interpreter → synthesizer
+root_agent = SequentialAgent(
+    name="InterpreterRootAgent",
+    sub_agents=[interpreter_pipeline, synthesizer_agent],
 )

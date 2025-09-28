@@ -1,5 +1,5 @@
 from google.adk.tools.agent_tool import AgentTool
-from .. import biodiversity_agent
+from ..subagents.biodiversity import biodiversity_agent
 
 # Create reusable biodiversity agent tool
 biodiversity_tool = AgentTool(biodiversity_agent)
