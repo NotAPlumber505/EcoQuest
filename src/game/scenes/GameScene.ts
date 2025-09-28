@@ -32,10 +32,12 @@ export class GameScene extends Scene{
         this.scene.pause();
         this.scene.launch('PauseScene'); 
     }
+
+    collectedTrash: Phaser.GameObjects.Image[] = [];
     
     create(){
 
-
+        let energyLevel = 10;
         
         const {width, height} = this.scale;
 
@@ -99,10 +101,17 @@ export class GameScene extends Scene{
         
         EventBus.emit('current-scene-ready', this);
 
-        const TrashObject = this.add.image(width, height - 75, 'AppleTrash').setScale(8).setInteractive()
+        this.collectedTrash = [];
+
+
+        const TrashObject = this.add.image(width, height - 75, 'AppleTrash').setScale(2).setInteractive();
 
         TrashObject.on('pointerdown', () => {
-            console.log("Hi Guys");
+            this.collectedTrash.push(TrashObject);
+            TrashObject.destroy();
+            console.log("Trash Collected. Amount of Trash Collected is now:", this.collectedTrash.length + " piece of trash")
+            energyLevel--;
+            console.log("Energy is now at:", energyLevel);
         });
     }
 
