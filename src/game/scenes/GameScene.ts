@@ -94,6 +94,7 @@ export class GameScene extends Scene{
             this.energyLevel--;
             this.energyText.setText('Energy Level:' + this.energyLevel);
             console.log("Energy now is at:", this.energyLevel)
+            this.spawnAllFromJSON(this, "test", {minX : 0, maxX: worldWidth, minY : 0, maxY : worldHeight})
         });
 
         this.newDayText = this.add.text(width - 40, height - 60, 'New Day', {
@@ -147,5 +148,48 @@ export class GameScene extends Scene{
         
         }
     }    
+
+    //Extrz functiiksn
+    public spawnAllFromJSON(scene : any, jsonKey : any, bounds = { minX: 0, maxX: 800, minY: 0, maxY: 600 }) {
+        const data = scene.cache.json.get(jsonKey);
+        const spawnedObjects: any[] = [];
+    
+        // Loop through each key (like "enemies", "powerups")
+        Object.keys(data).forEach(category => {
+            if(category === "predators" || category === "prey" || category === "plants" || category === "trash") {
+                
+            
+            data[category].forEach((spriteKey: any) => {
+                let x = Phaser.Math.Between(bounds.minX, bounds.maxX);
+                let y = Phaser.Math.Between(bounds.minY, bounds.maxY);
+    
+                const gameObject = scene.add.sprite(x, y, spriteKey);
+                switch (category) {
+                    case "plants":
+                        
+                        break;
+                    case "predators":
+                        
+                        break;
+                    case "prey":
+                        y = 0;
+                        x = 0;
+                        break;
+                    case "trash" :
+                        y = 0;
+                        x = 0;
+                        break;
+                    default :
+                        console.log("An object that wasn't supposed to be created was created...");
+                        break;
+                 }
+                spawnedObjects.push(gameObject);
+
+            });
+        }
+        });
+    
+        return spawnedObjects;
+    }
 }
 
