@@ -29,7 +29,7 @@ export class Preloader extends Scene
 
     preload ()
     {
-        //  Load the assets for the game - Replace with your own assets
+        //  Load the assets for the game 
         this.load.setPath('assets');
 
         // Animal NPCs
