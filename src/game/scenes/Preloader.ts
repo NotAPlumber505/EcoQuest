@@ -44,6 +44,13 @@ export class Preloader extends Scene
         this.load.image('Whale', 'WillyWhale.png');
         this.load.image('Turtle', 'TeeTurtle.png');
 
+        // Plants
+        // this.load.image('Anemone', 'Anemone.png');
+        // this.load.image('Coral', 'Coral.png');
+        // this.load.image('Kelp', 'Kelp.png');
+        // this.load.image('Seaweed', 'Seaweed.png');
+        // this.load.image('Seagrass', 'Seagrass.png');
+
         // Backgrounds
         this.load.image('CoralBackground','Meep.png'); // In-game background
         this.load.image('MainMenuBackground', 'MainMenuBackgroundReef.jpg'); // Main menu background
@@ -73,7 +80,8 @@ export class Preloader extends Scene
         this.load.image("Diver","Diver.png");
 
         //json
-        this.load.json("test","test.json");
+        this.load.json("Objects","Objects.json");
+        
 
     }
 
