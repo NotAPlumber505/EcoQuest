@@ -60,5 +60,15 @@ constructor() {
         //}
     }
 
+    async sendInputToAgent(inputText) {
+  const response = await fetch("/api/agent", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ input: inputText })
+  });
+
+  const data = await response.json();
+  return data.agentResponse;
+
 }
     
