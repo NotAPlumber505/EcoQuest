@@ -1,4 +1,9 @@
+import { GameScene } from "./GameScene";
+
 export default class StoreScene extends Phaser.Scene {
+
+    public static customShop: boolean = false;
+    public static customItems: string[] = [];
     constructor() {
         super({ key: 'StoreScene' });
     }
@@ -8,6 +13,9 @@ export default class StoreScene extends Phaser.Scene {
     }
 
     create() {
+
+
+        
         const centerX = this.sys.game.config.width as number / 2;
         const centerY = this.sys.game.config.height as number / 2;
         // Background
@@ -56,6 +64,44 @@ export default class StoreScene extends Phaser.Scene {
             color: '#fff'
         }).setOrigin(0.5);
         
+
+
+        if (StoreScene.customShop && StoreScene.customItems.length > 0) {
+        const customBtn = this.add.image(centerX, centerY + 230, 'CreateButton').setScale(2).setInteractive();
+        this.add.text(centerX, centerY + 270, 'Create Custom Item', {
+            fontSize: '18px',
+            color: '#fff'
+        }).setOrigin(0.5);
+
+        customBtn.on('pointerdown', () => {
+            if (StoreScene.customItems.length > 0) {
+                const spriteName = StoreScene.customItems[0];
+                // Create the sprite in the store scene
+                if (!GameScene.storeJSON) {
+                    GameScene.storeJSON = [];
+                }
+                GameScene.storeJSON.push(spriteName);
+                GameScene.spritesFromStore = true;
+
+                // Remove from customItems
+                StoreScene.customItems.shift();
+
+                // Remove from GameScene.quest.targets if present
+                if (GameScene.quest && Array.isArray(GameScene.quest.targets)) {
+                    const idx = GameScene.quest.targets.indexOf(spriteName);
+                    if (idx !== -1) {
+                        GameScene.quest.targets.splice(idx, 1);
+                    }
+                }
+
+                // Optionally hide button if no more items
+                if (StoreScene.customItems.length === 0) {
+                    customBtn.setVisible(false);
+                }
+            }
+        });
+    }
+
         
 
     }
