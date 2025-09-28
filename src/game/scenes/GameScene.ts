@@ -227,8 +227,28 @@ export class GameScene extends Scene{
     return null; // not found
 }
 
-    getQuestFromJSON(scene : GameScene, jsonKey : string) {
-        
+    getQuestFromJSON(jsonKey : string) {
+        const data = this.cache.json.get(jsonKey);
+        //QuestObject quest = new QuestObject();
+        Object.keys(data).forEach((category => {
+            switch (category) {
+                case "text":
+                    //quest.text = data[category];
+                    break;
+                case "quest_type":
+                    //quest.type = data[category];
+                    break;
+                case "targets":
+                    //quest.targets = data[category];
+                    break;
+
+                default:
+                    console.log("An object that wasn't supposed be here was here...");
+                    break;
+            }
+        }));
+        //return quest;
+
     }
 
 
