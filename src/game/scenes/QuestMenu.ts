@@ -3,9 +3,6 @@ import { fetchFacts, fetchBiodiversity, fetchNewDay, fetchQuestDirect } from '@/
 
 export default class QuestMenu extends Phaser.Scene {
 
-
-    public static quest: Quest;
-    public static questUpdated: boolean;
 constructor() {
         super({ key: 'QuestMenu' });
     }
@@ -15,7 +12,6 @@ constructor() {
     }
 
     create() {
-        QuestMenu.questUpdated = false;
         const centerX = this.sys.game.config.width as number / 2;
         const centerY = this.sys.game.config.height as number / 2;
         // Background
