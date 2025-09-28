@@ -41,10 +41,8 @@ export class GameScene extends Scene{
 
         const {width, height} = this.scale;
 
-        //const bg = this.add.tileSprite(0,0,width, height, 'CoralBackground')
-        this.bg = this.add.tileSprite(0,0,width, height, 'CoralBackground')
-        .setOrigin(0)
-        .setScrollFactor(0); //makes it pinned to camera
+        
+        this.background = this.add.image(0,0,'CoralBackground').setOrigin(0); //makes it pinned to camera
 
         //(this as any).bg = bg;
 
