@@ -3,7 +3,20 @@ import { EventBus } from "../EventBus";
 
 export class GameScene extends Scene{
 
-    
+    private  predatorsGroup: Phaser.GameObjects.Group;
+    private  preyGroup: Phaser.GameObjects.Group;
+    private  plantsGroup: Phaser.GameObjects.Group;
+    private  trashGroup: Phaser.GameObjects.Group;
+
+    private ensureGroups(){
+        if (!this.predatorsGroup) this.predatorsGroup = this.add.group();
+        if (!this.preyGroup) this.preyGroup = this.add.group();
+        if (!this.plantsGroup) this.plantsGroup = this.add.group();
+        if (!this.trashGroup) this.trashGroup = this.add.group();
+
+    }
+
+
     private background!: Phaser.GameObjects.Image; 
 
     //Class variables 
@@ -38,6 +51,10 @@ export class GameScene extends Scene{
     dayCount: number = 1;
     
     create(){
+        this.predatorsGroup = this.add.group();
+        this.preyGroup = this.add.group();
+        this.trashGroup = this.add.group();
+        this.plantsGroup = this.add.group();
 
         const {width, height} = this.scale;
 
@@ -159,36 +176,40 @@ export class GameScene extends Scene{
             if(category === "predators" || category === "prey" || category === "plants" || category === "trash") {
                 
             
-            data[category].forEach((spriteKey: any) => {
+            data[category].forEach((spriteKey: string) => {
                 let x = Phaser.Math.Between(bounds.minX, bounds.maxX);
                 let y = Phaser.Math.Between(bounds.minY, bounds.maxY);
+
     
                 const gameObject = scene.add.sprite(x, y, spriteKey);
                 switch (category) {
                     case "plants":
-                        
+                        const seabed = bounds.maxY - Phaser.Math.Between(80, 140);
+                        gameObject.setY(seabed).setDepth (-5);
+                        this.plantsGroup!.add(gameObject);
                         break;
                     case "predators":
-                        
+                        this.predatorsGroup!.add(gameObject);
                         break;
                     case "prey":
-                        y = 0;
-                        x = 0;
+                        this.preyGroup!.add(gameObject);
                         break;
                     case "trash" :
-                        y = 0;
-                        x = 0;
+                        this.trashGroup!.add(gameObject);                        
                         break;
                     default :
                         console.log("An object that wasn't supposed to be created was created...");
                         break;
                  }
                 spawnedObjects.push(gameObject);
+        
 
             });
         }
         });
-    
+        this.preyGroup.getChildren().forEach((children) => {
+            console.log(children.name);
+        });
         return spawnedObjects;
     }
 }

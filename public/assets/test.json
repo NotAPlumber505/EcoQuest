@@ -1,0 +1,6 @@
+{
+    "prey": ["Dolphin", "Shark","Clownfish"],
+    "predators": ["Eel"],
+    "trash": ["BottleTrash", "AppleTrash","DuckTrash","SodaTrash","TrashBag"],
+    "skipthiskey": ["LOL"]
+  }

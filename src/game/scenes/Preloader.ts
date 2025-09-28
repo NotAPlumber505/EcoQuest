@@ -72,6 +72,9 @@ export class Preloader extends Scene
         //Diver
         this.load.image("Diver","Diver.png");
 
+        //json
+        this.load.json("test","test.json");
+
     }
 
     create ()
