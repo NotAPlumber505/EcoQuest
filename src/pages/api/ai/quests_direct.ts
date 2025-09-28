@@ -47,8 +47,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     return res.status(502).json({ error: 'Quest output not found', raw: result });
   } catch (err: any) {
-    console.error('[api/ai/quests_direct] error', err);
-    return res.status(500).json({ error: 'Agent execution failed', details: err?.message || String(err) });
+    // If runAgent throws (ADK server/network error), log and return a deterministic
+    // fallback quest so the frontend can continue integration and testing.
+    console.error('[api/ai/quests_direct] runAgent threw an exception, returning fallback quest', err);
+    try {
+      const generated = generateQuestFromInput(input);
+      // include some debug info in the response for local development
+      return res.status(200).json({ ...generated, _warning: 'runAgent error, returned generated fallback', _debug: String(err?.message || err) });
+    } catch (gerr) {
+      console.error('[api/ai/quests_direct] fallback generation also failed', gerr);
+      return res.status(500).json({ error: 'Agent execution failed and fallback generation failed', details: String(gerr) });
+    }
   }
 }
 
@@ -60,6 +69,13 @@ function generateQuestFromInput(input: any) {
   const predators: string[] = Array.isArray(input?.predators) ? input.predators : [];
   const garbage: string[] = Array.isArray(input?.garbage) ? input.garbage : [];
   const actions = Number(input?.actions) || 1;
+  // Allow external seed to vary deterministic randomness during testing
+  const seed = Number(input?.seed) || Math.floor(Math.random() * 1000000);
+  const rnd = (n = 1) => {
+    // Simple seeded-ish pseudo-random using seed arithmetic
+    const v = (Math.sin(seed + n * 9301) * 10000) % 1;
+    return Math.abs(v);
+  };
 
   // Decide quest type
   let quest_type = 'Garbage';
@@ -67,29 +83,46 @@ function generateQuestFromInput(input: any) {
 
   if (input?.questType === 'biodiversity' || (!input?.questType && (prey.length || predators.length || plants.length))) {
     // Biodiversity-style quest
-    // Simple heuristic: if predators > prey, remove predators; if plants are few, plant; else add prey.
-    if (predators.length > prey.length) {
+    // Simple heuristic augmented with randomness to vary outcomes
+    if (predators.length > prey.length && Math.random() < 0.7) {
       quest_type = 'Removing';
-      targets = predators.slice(0, Math.max(1, actions));
-    } else if (plants.length > 0 && plants.length <= 2) {
+      targets = sampleArray(predators, Math.max(1, actions), seed + 1);
+    } else if (plants.length > 0 && plants.length <= (2 + Math.floor(rnd(2) * 3))) {
       quest_type = 'Plant';
-      targets = plants.slice(0, Math.max(1, actions));
+      targets = sampleArray(plants, Math.max(1, actions), seed + 2);
     } else {
       quest_type = 'Adding';
-      targets = prey.slice(0, Math.max(1, actions));
+      targets = sampleArray(prey.length ? prey : plants.concat(garbage), Math.max(1, actions), seed + 3);
     }
   } else if (input?.questType === 'pollution' || garbage.length > 0) {
     quest_type = 'Garbage';
-    targets = garbage.slice(0, Math.max(1, actions));
+    if (garbage.length > 0) targets = sampleArray(garbage, Math.max(1, actions), seed + 4);
+    else targets = ['TrashBag'];
   } else {
     // Fallback: if no clear data, create a small garbage quest
     quest_type = 'Garbage';
-    targets = garbage.length ? garbage.slice(0, Math.max(1, actions)) : ['TrashBag'];
+    targets = garbage.length ? sampleArray(garbage, Math.max(1, actions), seed + 5) : ['TrashBag'];
   }
 
   // Build a one-sentence description
   const text = buildQuestText(quest_type, targets);
   return { text, quest_type, targets };
+}
+
+function sampleArray<T>(arr: T[], count: number, seed = 1): T[] {
+  if (!arr || arr.length === 0) return [];
+  const out: T[] = [];
+  const used = new Set<number>();
+  let s = Math.abs(seed) || 1;
+  while (out.length < Math.min(count, arr.length)) {
+    s = (s * 9301 + 49297) % 233280;
+    const idx = Math.floor((s / 233280) * arr.length);
+    if (!used.has(idx)) {
+      used.add(idx);
+      out.push(arr[idx]);
+    }
+  }
+  return out;
 }
 
 function buildQuestText(quest_type: string, targets: string[]) {
