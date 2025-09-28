@@ -1,4 +1,4 @@
-import { Scene } from "phaser";
+import { Game, Scene } from "phaser";
 import { EventBus } from "../EventBus";
 import { Quest } from "../classes/Quest";
 
@@ -8,6 +8,11 @@ export class GameScene extends Scene{
     public static  preyGroup: Phaser.GameObjects.Group;
     public static plantsGroup: Phaser.GameObjects.Group;
     public static trashGroup: Phaser.GameObjects.Group;
+    public static quest: Quest;
+    public static questUpdated: boolean;
+    public static NewDayJson: JSON;
+    public static NewDayJsonReady: boolean
+    public static questShop : boolean;
 
     private ensureGroups(){
         if (!GameScene.predatorsGroup) GameScene.predatorsGroup = this.add.group();
@@ -56,8 +61,11 @@ export class GameScene extends Scene{
         GameScene.preyGroup = this.add.group();
         GameScene.trashGroup = this.add.group();
         GameScene.plantsGroup = this.add.group();
-
+        GameScene.NewDayJsonReady = false;
+        GameScene.questUpdated = false;
+        GameScene.questShop = false;
         const {width, height} = this.scale;
+
 
 
 
@@ -149,7 +157,14 @@ export class GameScene extends Scene{
     }
 
     update(){
+        if(GameScene.NewDayJsonReady){
 
+            this.cache.json.add('NewDayJson', GameScene.NewDayJson);
+            this.spawnAllFromJSON("NewDayJson", {minX : 0, maxX: this.background.width, minY : 0, maxY : this.background.height});
+        }
+        if (GameScene.questUpdated) { 
+            this.AllowTarget(GameScene.quest.targets, GameScene.quest.quest_type);
+        }
         // this.player.setVelocity(0);
         // this.player.setAcceleration(0);
         const body = this.player.body as Phaser.Physics.Arcade.Body | null;
@@ -227,6 +242,7 @@ export class GameScene extends Scene{
         GameScene.preyGroup.getChildren().forEach((children) => {
             console.log(children.name);
         });
+        this.cache.json.remove(jsonKey);
         return spawnedObjects;
     }
 
@@ -244,30 +260,51 @@ export class GameScene extends Scene{
     return null; // not found
 }
 
-    getQuestFromJSON(jsonKey : string) {
-        const data = this.cache.json.get(jsonKey);
-        const quest = new Quest();
-        Object.keys(data).forEach((category => {
-            switch (category) {
-                case "text":
-                    quest.setText(data[category]);
-                    break;
-                case "quest_type":
-                    quest.setType(data[category]);
-                    break;
-                case "targets":
-                    quest.setTargets(data[category]);
-                    break;
+    public AllowTarget(targets : string [], action : string) {
+        const group = targets[0];
 
-                default:
-                    console.log("A category that wasn't supposed be here was here... it was: " + category);
-                    break;
-            }
-        }));
-        return quest;
+    let selectedGroup: Phaser.GameObjects.Group | undefined;
 
+    switch (group) {
+        case "predators":
+        selectedGroup = GameScene.predatorsGroup;
+        break;
+        case "prey":
+        selectedGroup = GameScene.preyGroup;
+        break;
+        case "plants":
+        selectedGroup = GameScene.plantsGroup;
+        break;
+        case "trash":
+        selectedGroup = GameScene.trashGroup;
+        break;
+        default:
+        selectedGroup = undefined;
     }
 
+    if ((action === "garbage" || action === "remove") && selectedGroup) {
+        selectedGroup.getChildren().forEach((target: any) => {
+        target.setInteractive();
+        target.on('pointerdown', () => {
+            if (this.energyLevel > 0) {
+            this.energyLevel--;
+            this.energyText.setText('Energy Level: ' + this.energyLevel);
+            // Remove target from quest targets array
+            const idx = GameScene.quest.targets.indexOf(target.name);
+            if (idx !== -1) {
+                GameScene.quest.targets.splice(idx, 1);
+            }
+            target.destroy();
+            }
+        });
+        });
+    }
 
+    if (action === "add" || action === "plant") {
+        (this as any).customShop = true;
+    }
+
+    
+
+    }
 }
-
