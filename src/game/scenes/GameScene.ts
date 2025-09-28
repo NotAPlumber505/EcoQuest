@@ -262,14 +262,32 @@ export class GameScene extends Scene{
         });
     }
 
-    GameScene.NewDayJson = JSON.stringify(newDayPayload); // cache the JSON for use
+    this.cache.json.add('NewDayJson', GameScene.NewDayJson);
     GameScene.NewDayJsonReady = true;
     });
 
 
-        // Tutorial HUD button
-        const tutorialBtn = this.add.text(20, 20, 'Tutorial', { fontSize: '16px', color: '#fff', backgroundColor: '#00000080', padding: { x: 8, y: 6 } }).setOrigin(0).setScrollFactor(0).setInteractive();
-        tutorialBtn.on('pointerdown', () => this.showTutorial());
+// Inside your Phaser Scene's create() method
+
+// 1. Get the screen height and explicitly cast it as a number
+const screenHeight = this.game.config.height as number; 
+
+const tutorialBtn = this.add.text(
+    20, // X-coordinate: 20 pixels from the left
+    screenHeight - 20, // Y-coordinate: Screen Height minus 20 pixels from the bottom
+    'Tutorial',
+    {
+        fontSize: '16px',
+        color: '#fff',
+        backgroundColor: '#00000080',
+        padding: { x: 8, y: 6 }
+    }
+)
+.setOrigin(0, 1) // Anchor the text box at its bottom-left corner
+.setScrollFactor(0)
+.setInteractive();
+
+tutorialBtn.on('pointerdown', () => this.showTutorial());
     }
 
     update(){
