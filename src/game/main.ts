@@ -30,18 +30,6 @@ const config: Phaser.Types.Core.GameConfig = {
         gamepad: false
     },
 
-    scale:{
-        mode: Phaser.Scale.FIT, // Will let phaser know to scale the game to the windows
-        autoCenter: Phaser.Scale.CENTER_BOTH, // Centers the game background
-    },
-
-    input: {
-        keyboard: true,
-        mouse: true,
-        touch: true,
-        gamepad: false
-    },
-
     physics: {
         default: 'arcade',
         arcade: {

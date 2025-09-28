@@ -98,6 +98,12 @@ export class GameScene extends Scene{
         this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
         
         EventBus.emit('current-scene-ready', this);
+
+        const TrashObject = this.add.image(width, height - 75, 'AppleTrash').setScale(8).setInteractive()
+
+        TrashObject.on('pointerdown', () => {
+            console.log("Hi Guys");
+        });
     }
 
     update(){
