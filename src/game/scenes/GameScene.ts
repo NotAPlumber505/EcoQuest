@@ -4,7 +4,7 @@ import { EventBus } from "../EventBus";
 export class GameScene extends Scene{
 
     
-    private bg!: Phaser.GameObjects.TileSprite; 
+    private background!: Phaser.GameObjects.Image; 
 
     //Class variables 
 
@@ -18,8 +18,6 @@ export class GameScene extends Scene{
     private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
 
     private readonly moveSpeed = 300; 
-    private readonly parallax = 0.02;
-
 
     constructor (){
         //This scene will have a unique key that will be connected with the main menu when we click the start button
@@ -30,57 +28,26 @@ export class GameScene extends Scene{
     //Runs once when the scene is first created (just for initialization)
     create(){
 
-
-        
-        const {width, height} = this.scale;
-
-        //const bg = this.add.tileSprite(0,0,width, height, 'CoralBackground')
-        this.bg = this.add.tileSprite(0,0,width, height, 'CoralBackground')
-        .setOrigin(0)
-        .setScrollFactor(0); //makes it pinned to camera
-
-        //(this as any).bg = bg;
-
         this.cameras.main.setBackgroundColor(0x000080);
+        this.background = this.add.image(0,0,'CoralBackground').setOrigin(0); //makes it pinned to camera
 
-
-        // testing things out but this should make it easier to position elements with the screen size (might change later if it's not workin out)
-        // const gameWidth = this.sys.game.config.width as number;
-        // const gameHeight = this.sys.game.config.height as number;
 
         //Background 
-        //setOrgin() will make the image an anchor to the top left (0,0)
-        // const background = this.add.image(0,0,'CoralBackground').setOrigin(0);
-
-        // const overScaleFacor = 1.1;
-
-        //background.setDisplaySize(this.sys.game.config.width as number, this.sys.game.config.height as number);
         
+        const worldWidth = this.background.width;
+        const worldHeight = this.background.height;
 
-        // Need to scale the image to match the window 
-        //background.setDisplaySize(gameWidth,gameHeight);
-        // background.setDisplaySize(gameWidth * overScaleFacor, gameHeight * overScaleFacor);
-        // background.setOrigin(0.5);
-        // background.setPosition(gameWidth/2,gameHeight/2);
-
-
-        const kb = this.input.keyboard;
-        if (!kb) {
-        console.error('Keyboard plugin is not available');
-        return; // or throw, or fallback
-        }
-        this.cursors = kb.createCursorKeys();
+        this.physics.world.setBounds(0,0,worldWidth, worldHeight);
+        this.cameras.main.setBounds(0,0,worldWidth,worldHeight);
 
         this.cursors = this.input.keyboard!.createCursorKeys();
 
+
         //The diver!  <3
         //this.physics.add.sprite will give the character more arcade like making movement go by velocity 
-        this.player = this.physics.add.sprite(150,height/2,'Diver',); //(starting position for X, For Y, key for the diver)
-
+        this.player = this.physics.add.sprite(150,worldHeight/2,'Diver',); //(starting position for X, For Y, key for the diver)
         this.player.setScale(2);
         this.player.setFlipX(false); //make the character to look right at the start
-
-
         // Keep player in bounds with collision
         this.player.setCollideWorldBounds(true);
 
@@ -98,8 +65,9 @@ export class GameScene extends Scene{
         // this.player.setVelocity(0);
         // this.player.setAcceleration(0);
         const body = this.player.body as Phaser.Physics.Arcade.Body | null;
-    
+
         if (!body) return;
+
         body.setVelocity(0);
 
         
@@ -123,14 +91,6 @@ export class GameScene extends Scene{
             this.player.setVelocityY(this.moveSpeed);
         
         }
-        
-        const bg = (this as any).bg as Phaser.GameObjects.TileSprite;
-
-       // const body = this.player.body as Phaser.Physics.Arcade.Body | null;
-        if (body){
-        this.bg.tilePositionX += body.velocity.x * 0.02;
-        this.bg.tilePositionY += body.velocity.y * 0.02;
-        }    
-    }
-
+    }    
 }
+
