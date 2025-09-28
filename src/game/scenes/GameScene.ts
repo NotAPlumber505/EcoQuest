@@ -1,5 +1,6 @@
 import { Scene } from "phaser";
 import { EventBus } from "../EventBus";
+import { Quest } from "../classes/Quest";
 
 export class GameScene extends Scene{
 
@@ -58,6 +59,8 @@ export class GameScene extends Scene{
 
         const {width, height} = this.scale;
 
+
+
         
         this.background = this.add.image(0,0,'CoralBackground').setOrigin(0); //makes it pinned to camera
 
@@ -111,7 +114,7 @@ export class GameScene extends Scene{
             this.energyLevel--;
             this.energyText.setText('Energy Level:' + this.energyLevel);
             console.log("Energy now is at:", this.energyLevel)
-            this.spawnAllFromJSON(this, "test", {minX : 0, maxX: worldWidth, minY : 0, maxY : worldHeight})
+            this.spawnAllFromJSON("Objects", {minX : 0, maxX: worldWidth, minY : 0, maxY : worldHeight})
         });
 
         this.newDayText = this.add.text(width - 40, height - 60, 'New Day', {
@@ -129,7 +132,19 @@ export class GameScene extends Scene{
             this.energyText.setText('Energy Level: ' + this.energyLevel);
             console.log("Energy restored!");
 
-        })
+        });
+
+        const questButton = this.add.text(width - 40, height + -700, 'Quests', {
+            fontSize: '20px',
+            color: '#fff',
+            backgroundColor: '#00000080',
+            padding: { x: 10, y: 5 }
+        }).setOrigin(1,1).setScrollFactor(0).setInteractive();
+
+        questButton.on('pointerdown', () => {
+            this.scene.start('QuestMenu');
+
+        });
         
     }
 
@@ -150,25 +165,27 @@ export class GameScene extends Scene{
             this.player.setVelocityX (-this.moveSpeed);
             this.player.setFlipX(true);
 
-        } else if (this.cursors.right.isDown){
+        } 
+        if (this.cursors.right.isDown){
             this.player.setVelocityX(this.moveSpeed);
             this.player.setFlipX(false);
             
         }
-
-        //vertical movement
         if (this.cursors.up.isDown){
             this.player.setVelocityY(-this.moveSpeed);
             
-        } else if (this.cursors.down.isDown){
+        } 
+        if (this.cursors.down.isDown) {
             this.player.setVelocityY(this.moveSpeed);
-        
+        }
+        if (this.cursors.space.isDown) {
+            this.togglePause();
         }
     }    
 
-    //Extrz functiiksn
-    public spawnAllFromJSON(scene : any, jsonKey : any, bounds = { minX: 0, maxX: 800, minY: 0, maxY: 600 }) {
-        const data = scene.cache.json.get(jsonKey);
+    //JSON Methods
+    public spawnAllFromJSON(jsonKey : string, bounds = { minX: 0, maxX: 800, minY: 0, maxY: 600 }) {
+        const data = this.cache.json.get(jsonKey);
         const spawnedObjects: any[] = [];
     
         // Loop through each key (like "enemies", "powerups")
@@ -181,7 +198,7 @@ export class GameScene extends Scene{
                 let y = Phaser.Math.Between(bounds.minY, bounds.maxY);
 
     
-                const gameObject = scene.add.sprite(x, y, spriteKey);
+                const gameObject = this.add.sprite(x, y, spriteKey);
                 switch (category) {
                     case "plants":
                         const seabed = bounds.maxY - Phaser.Math.Between(80, 140);
@@ -212,5 +229,45 @@ export class GameScene extends Scene{
         });
         return spawnedObjects;
     }
+
+
+    getSpriteGroup(jsonKey : string, spriteName : string) {
+    const data = this.cache.json.get(jsonKey);
+
+    // Loop through each group in the JSON
+    for (let groupName in data) {
+        if (data[groupName].includes(spriteName)) {
+            return groupName; // found it
+        }
+    }
+
+    return null; // not found
+}
+
+    getQuestFromJSON(jsonKey : string) {
+        const data = this.cache.json.get(jsonKey);
+        const quest = new Quest();
+        Object.keys(data).forEach((category => {
+            switch (category) {
+                case "text":
+                    quest.setText(data[category]);
+                    break;
+                case "quest_type":
+                    quest.setType(data[category]);
+                    break;
+                case "targets":
+                    quest.setTargets(data[category]);
+                    break;
+
+                default:
+                    console.log("A category that wasn't supposed be here was here... it was: " + category);
+                    break;
+            }
+        }));
+        return quest;
+
+    }
+
+
 }
 

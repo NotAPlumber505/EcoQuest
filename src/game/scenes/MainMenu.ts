@@ -32,6 +32,7 @@ export default class MainMenu extends Phaser.Scene {
             this.scene.start('StoreScene'); // Switch to scene
         });
 
+
         // Instructions
         this.add.text(centerX, centerY + 150, 'Click Start to Play', {
             fontSize: '32px',
