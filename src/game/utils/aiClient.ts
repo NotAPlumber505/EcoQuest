@@ -84,24 +84,49 @@ export async function fetchNewDay(input?: any): Promise<string> {
   return 'No new-day summary available.';
 }
 
+// utils/api.ts
 export async function fetchQuestDirect(questType: string, input?: any): Promise<any> {
-  // Add a small random seed so repeated calls are more likely to return different quests
   const seed = Math.floor(Math.random() * 1000000);
-  const payload = input || { questType, plants: getPlants(), prey: getPrey(), predators: getPredators(), garbage: getGarbage(), actions: 1, seed };
-  const json = await postJson('/api/ai/quests_direct?app=context_agent', payload);
-  if (json && typeof json === 'object') {
-    if (json.text) return json;
-    if (json.quest) return json.quest;
-    if (json.synthesized_output && json.synthesized_output.text) return json.synthesized_output;
-  }
+
+  // Default biome context
+  const defaultBiome = {
+    questType,
+    plants: getPlants(),        // Your game's current biome state
+    prey: getPrey(),
+    predators: getPredators(),
+    garbage: getGarbage(),
+    actions: 1,
+    seed
+  };
+
+  const payload = input || defaultBiome;
+
+  const response = await fetch('/api/ai/context', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  const json = await response.json();
+
+  // Parse different possible ADK outputs
+  if (json?.text) return json;
+  if (json?.quest) return json.quest;
+  if (json?.synthesized_output?.text) return json.synthesized_output;
+
   if (Array.isArray(json)) {
     for (let i = json.length - 1; i >= 0; --i) {
       const ev = json[i];
       const parts = ev?.content?.parts || [];
-      const text = parts.map((p:any) => p.text || '').join('');
-      try { const parsed = JSON.parse(text); if (parsed && (parsed.quest || parsed.text)) return parsed.quest || parsed; } catch (_) {}
+      const text = parts.map((p: any) => p.text || '').join('');
+      try {
+        const parsed = JSON.parse(text);
+        if (parsed?.quest || parsed?.text) return parsed.quest || parsed;
+      } catch (_) { }
       if (text) return { text };
     }
   }
+
   return { text: 'No quest available.' };
 }
+

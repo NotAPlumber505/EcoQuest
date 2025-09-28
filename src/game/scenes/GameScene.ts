@@ -1,13 +1,13 @@
 import { Game, Scene } from "phaser";
 import { EventBus } from "../EventBus";
 import { Quest } from "../classes/Quest";
-import { markCollected, markPlanted, markReleased, markIntroduced } from '@/game/utils/questState';
+import { markCollected, markPlanted, markReleased, markIntroduced, getGarbage, getPlants, getPredators, getPrey } from '@/game/utils/questState';
 import { fetchFacts } from '@/game/utils/aiClient';
 
 export class GameScene extends Scene{
 
-    public static  predatorsGroup: Phaser.GameObjects.Group;
-    public static  preyGroup: Phaser.GameObjects.Group;
+    public static predatorsGroup: Phaser.GameObjects.Group;
+    public static preyGroup: Phaser.GameObjects.Group;
     public static plantsGroup: Phaser.GameObjects.Group;
     public static trashGroup: Phaser.GameObjects.Group;
     public static quest: Quest;
@@ -69,10 +69,6 @@ export class GameScene extends Scene{
         GameScene.questUpdated = false;
         GameScene.questShop = false;
         const {width, height} = this.scale;
-
-
-
-
         
         this.background = this.add.image(0,0,'CoralBackground').setOrigin(0); //makes it pinned to camera
 
@@ -160,7 +156,7 @@ export class GameScene extends Scene{
 
         });
         // Add physics overlap so moving through trash collects it automatically
-        this.physics.add.overlap(this.player, this.trashGroup, (playerObj: any, trashObj: any) => {
+        this.physics.add.overlap(this.player, GameScene.trashGroup, (playerObj: any, trashObj: any) => {
             try {
                 const key = trashObj.texture?.key || trashObj.name || 'Trash';
                 markCollected(key);
@@ -182,8 +178,8 @@ export class GameScene extends Scene{
             });
         };
 
-        attachFactHandlers(this.predatorsGroup);
-        attachFactHandlers(this.preyGroup);
+        attachFactHandlers(GameScene.predatorsGroup);
+        attachFactHandlers(GameScene.preyGroup);
 
         // Listen for playerAction events (emitted by questState helpers) to decrement energy
         window.addEventListener('playerAction', (e: any) => {
@@ -234,6 +230,43 @@ export class GameScene extends Scene{
             } catch (err) { /* ignore */ }
         });
 
+        window.addEventListener('newDay', async () => {
+        const newDayPayload = {
+            plants: getPlants(),
+            prey: getPrey(),
+            predators: getPredators(),
+            garbage: getGarbage(),
+            actions: 1
+        };
+
+    // Call ContextAgent API pipeline for new day context
+    const response = await fetch('/api/ai/context', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newDayPayload)
+    });
+
+    const result = await response.json();
+
+    // Store it in scene for rendering
+    if (result?.text) {
+        this.showTransientFact(result.text, this.player.x, this.player.y - 80);
+    }
+    if (result?.biodiversity_report?.summary) {
+        this.showTransientFact(result.biodiversity_report.summary, this.player.x, this.player.y - 60);
+    }
+
+    if (result?.facts) {
+        result.facts.forEach((fact: string, i: number) => {
+            setTimeout(() => this.showTransientFact(fact, this.player.x, this.player.y - (40 - i * 10)), 500 * i);
+        });
+    }
+
+    GameScene.NewDayJson = JSON.stringify(newDayPayload); // cache the JSON for use
+    GameScene.NewDayJsonReady = true;
+    });
+
+
         // Tutorial HUD button
         const tutorialBtn = this.add.text(20, 20, 'Tutorial', { fontSize: '16px', color: '#fff', backgroundColor: '#00000080', padding: { x: 8, y: 6 } }).setOrigin(0).setScrollFactor(0).setInteractive();
         tutorialBtn.on('pointerdown', () => this.showTutorial());
@@ -256,8 +289,6 @@ export class GameScene extends Scene{
 
         body.setVelocity(0);
 
-        
-        
          
         if (this.cursors.left.isDown){
             this.player.setVelocityX (-this.moveSpeed);
@@ -302,10 +333,10 @@ export class GameScene extends Scene{
         try {
             // For each target, if there's no sprite with that texture key in any group, spawn it near player
             targets.forEach((t: string) => {
-                const exists = this.predatorsGroup.getChildren().some((c:any) => c.texture?.key === t)
-                  || this.preyGroup.getChildren().some((c:any) => c.texture?.key === t)
-                  || this.plantsGroup.getChildren().some((c:any) => c.texture?.key === t)
-                  || this.trashGroup.getChildren().some((c:any) => c.texture?.key === t);
+                const exists = GameScene.predatorsGroup.getChildren().some((c:any) => c.texture?.key === t)
+                  || GameScene.preyGroup.getChildren().some((c:any) => c.texture?.key === t)
+                  || GameScene.plantsGroup.getChildren().some((c:any) => c.texture?.key === t)
+                  || GameScene.trashGroup.getChildren().some((c:any) => c.texture?.key === t);
                 if (!exists) {
                     const x = Phaser.Math.Between(Math.max(0, this.player.x - 200), Math.min(this.background.width, this.player.x + 200));
                     const y = Phaser.Math.Between(Math.max(0, this.player.y - 200), Math.min(this.background.height, this.player.y + 200));
@@ -313,13 +344,13 @@ export class GameScene extends Scene{
                     // If it's a trash-type texture, make it interactive and add to trashGroup
                     if (t.toLowerCase().includes('trash') || t.toLowerCase().includes('garbage')) {
                         try { spr.setInteractive(); spr.name = t; spr.on('pointerdown', () => { try { markCollected(t); } catch (e) {} spr.destroy(); }); } catch (e) {}
-                        this.trashGroup.add(spr);
+                        GameScene.trashGroup.add(spr);
                     } else if (t.toLowerCase().includes('plant')) {
-                        this.plantsGroup.add(spr);
+                        GameScene.plantsGroup.add(spr);
                     } else {
                         // default to prey
                         try { spr.setInteractive(); spr.on('pointerdown', async () => { const fact = await fetchFacts({ subject: t }); this.showTransientFact(fact, spr.x, spr.y - 30); }); } catch (e) {}
-                        this.preyGroup.add(spr);
+                        GameScene.preyGroup.add(spr);
                     }
                 }
             });
@@ -370,7 +401,7 @@ export class GameScene extends Scene{
                         GameScene.preyGroup!.add(gameObject);
                         break;
                     case "trash" :
-                            this.trashGroup!.add(gameObject);
+                            GameScene.trashGroup!.add(gameObject);
                             // Make trash interactive so players can collect spawned trash too
                             try {
                                 gameObject.setInteractive();
@@ -461,7 +492,6 @@ export class GameScene extends Scene{
         (this as any).customShop = true;
     }
 
-    
 
     }
 }

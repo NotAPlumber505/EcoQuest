@@ -20,4 +20,6 @@ export class Quest {
         this.targets = targets;
     }
     setGroup(group : string) {
+        this.group = group;
+    }
 }
