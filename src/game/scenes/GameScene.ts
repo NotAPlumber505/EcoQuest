@@ -32,11 +32,13 @@ export class GameScene extends Scene{
     }
 
     collectedTrash: Phaser.GameObjects.Image[] = [];
+    energyText: Phaser.GameObjects.Text;
+    energyLevel: number = 10;
+    newDayText: Phaser.GameObjects.Text;
+    dayCount: number = 1;
     
     create(){
 
-        let energyLevel = 10;
-        
         const {width, height} = this.scale;
 
         //const bg = this.add.tileSprite(0,0,width, height, 'CoralBackground')
@@ -82,13 +84,37 @@ export class GameScene extends Scene{
 
         const TrashObject = this.add.image(width, height - 75, 'AppleTrash').setScale(2).setInteractive();
 
+        this.energyText = this.add.text(100, 20, 'Energy Level: ' + this.energyLevel, {
+            fontSize: '20px',
+            color: '#fff'
+        }).setOrigin(0.5).setScrollFactor(0);
+
         TrashObject.on('pointerdown', () => {
             this.collectedTrash.push(TrashObject);
             TrashObject.destroy();
             console.log("Trash Collected. Amount of Trash Collected is now:", this.collectedTrash.length + " piece of trash")
-            energyLevel--;
-            console.log("Energy is now at:", energyLevel);
+            this.energyLevel--;
+            this.energyText.setText('Energy Level:' + this.energyLevel);
+            console.log("Energy now is at:", this.energyLevel)
         });
+
+        this.newDayText = this.add.text(width - 40, height - 60, 'New Day', {
+            fontSize: '20px',
+            color: '#fff',
+            backgroundColor: '#00000080',
+            padding: { x: 10, y: 5 }
+        }).setOrigin(1,1).setScrollFactor(0).setInteractive();
+
+        this.newDayText.on('pointerdown', () => {
+            this.energyLevel = 10;
+            console.log("New Day Started!");
+            this.dayCount++;
+            console.log('The day number is: ' + this.dayCount);
+            this.energyText.setText('Energy Level: ' + this.energyLevel);
+            console.log("Energy restored!");
+
+        })
+        
     }
 
     update(){
