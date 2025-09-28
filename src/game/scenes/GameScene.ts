@@ -1,5 +1,6 @@
 import { Scene } from "phaser";
 import { EventBus } from "../EventBus";
+import { Quest } from "../classes/Quest";
 
 export class GameScene extends Scene{
 
@@ -57,6 +58,8 @@ export class GameScene extends Scene{
         this.plantsGroup = this.add.group();
 
         const {width, height} = this.scale;
+
+
 
         
         this.background = this.add.image(0,0,'CoralBackground').setOrigin(0); //makes it pinned to camera
@@ -129,7 +132,19 @@ export class GameScene extends Scene{
             this.energyText.setText('Energy Level: ' + this.energyLevel);
             console.log("Energy restored!");
 
-        })
+        });
+
+        const questButton = this.add.text(width - 40, height + -700, 'Quests', {
+            fontSize: '20px',
+            color: '#fff',
+            backgroundColor: '#00000080',
+            padding: { x: 10, y: 5 }
+        }).setOrigin(1,1).setScrollFactor(0).setInteractive();
+
+        questButton.on('pointerdown', () => {
+            this.scene.start('QuestMenu');
+
+        });
         
     }
 
@@ -150,19 +165,21 @@ export class GameScene extends Scene{
             this.player.setVelocityX (-this.moveSpeed);
             this.player.setFlipX(true);
 
-        } else if (this.cursors.right.isDown){
+        } 
+        if (this.cursors.right.isDown){
             this.player.setVelocityX(this.moveSpeed);
             this.player.setFlipX(false);
             
         }
-
-        //vertical movement
         if (this.cursors.up.isDown){
             this.player.setVelocityY(-this.moveSpeed);
             
-        } else if (this.cursors.down.isDown){
+        } 
+        if (this.cursors.down.isDown) {
             this.player.setVelocityY(this.moveSpeed);
-        
+        }
+        if (this.cursors.space.isDown) {
+            this.togglePause();
         }
     }    
 
@@ -229,25 +246,25 @@ export class GameScene extends Scene{
 
     getQuestFromJSON(jsonKey : string) {
         const data = this.cache.json.get(jsonKey);
-        //QuestObject quest = new QuestObject();
+        const quest = new Quest();
         Object.keys(data).forEach((category => {
             switch (category) {
                 case "text":
-                    //quest.text = data[category];
+                    quest.setText(data[category]);
                     break;
                 case "quest_type":
-                    //quest.type = data[category];
+                    quest.setType(data[category]);
                     break;
                 case "targets":
-                    //quest.targets = data[category];
+                    quest.setTargets(data[category]);
                     break;
 
                 default:
-                    console.log("An category that wasn't supposed be here was here... it was: " + category);
+                    console.log("A category that wasn't supposed be here was here... it was: " + category);
                     break;
             }
         }));
-        //return quest;
+        return quest;
 
     }
 

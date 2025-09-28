@@ -7,6 +7,8 @@ import StoreScene from './scenes/StoreScene';
 import PauseMenu from './scenes/PauseMenu';
 import { AUTO, Game } from 'phaser';
 import { Preloader } from './scenes/Preloader';
+import QuestMenu from './scenes/QuestMenu';
+import LoadingScene from './scenes/LoadingScreen';
 
 //  Find out more information about the Game Config at:
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
@@ -47,6 +49,8 @@ const config: Phaser.Types.Core.GameConfig = {
         PauseMenu,
         GameOver,
         StoreScene,
+        QuestMenu,
+        LoadingScene
     ]
 };
 
