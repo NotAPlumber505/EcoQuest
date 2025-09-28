@@ -166,8 +166,8 @@ export class GameScene extends Scene{
         }
     }    
 
-    //Extrz functiiksn
-    public spawnAllFromJSON(scene : any, jsonKey : any, bounds = { minX: 0, maxX: 800, minY: 0, maxY: 600 }) {
+    //JSON Methods
+    public spawnAllFromJSON(scene : GameScene, jsonKey : string, bounds = { minX: 0, maxX: 800, minY: 0, maxY: 600 }) {
         const data = scene.cache.json.get(jsonKey);
         const spawnedObjects: any[] = [];
     
@@ -212,5 +212,22 @@ export class GameScene extends Scene{
         });
         return spawnedObjects;
     }
+
+
+    getSpriteGroup(scene : GameScene, jsonKey : string, spriteName : string) {
+    const data = scene.cache.json.get(jsonKey);
+
+    // Loop through each group in the JSON
+    for (let groupName in data) {
+        if (data[groupName].includes(spriteName)) {
+            return groupName; // found it
+        }
+    }
+
+    return null; // not found
+}
+
+
+
 }
 
