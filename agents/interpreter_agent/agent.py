@@ -1,31 +1,15 @@
-from google.adk.agents import Agent
+from google.adk.agents import ParallelAgent, SequentialAgent
 
-from .subagents.biodiversity.agent import biodiversity_agent
-from .subagents.facts.agent import facts_agent
+from .subagents.biodiversity import biodiversity_agent
+from .subagents.facts import facts_agent
+from .subagents.synthesizer import synthesizer_agent
 
-dummy_json = """
-{
-  "type": "quest_request",
-  "questType": "biodiversity",
-  "plants": ["Seaweed", "Kelp", "Algae"],
-  "prey": ["Small Fish", "Shrimp", "Plankton"],
-  "predators": ["Shark", "Seal", "Tuna"],
-  "actions": 2
-}
-"""
+ecological_interpreter = ParallelAgent(
+    name="InterpreterPipeline",
+    sub_agents=[facts_agent, biodiversity_agent],
+)
 
-root_agent = Agent(
-    name="EcoQuestPipeline",
-    model="gemini-2.0-flash",
-    sub_agents=[biodiversity_agent], 
-    description=
-    """
-    New Day and Quest Manager Agent
-    """,
-    instruction=
-    f"""
-    You are a Parent agent that will determine what agent the information given is best suited for. 
-    If you receive a prompt such as {dummy_json} you are to route it to the questing agent.
-
-    """,
+root_agent = SequentialAgent(
+    name="JSONMonitoringAgent",
+    sub_agents=[ecological_interpreter, synthesizer_agent],
 )

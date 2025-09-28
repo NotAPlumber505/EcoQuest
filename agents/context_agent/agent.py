@@ -27,10 +27,7 @@ root_agent = Agent(
     name="EcoQuestPipeline",
     model="gemini-2.0-flash",
     sub_agents=[quests_agent, new_day_agent], 
-    description=
-    """
-    Biodiversity and Quest Context Agent
-    """,
+    description= "Biodiversity and Quest Context Agent",
     instruction=
     f"""
     You are a Parent agent that will determine what agent the 
