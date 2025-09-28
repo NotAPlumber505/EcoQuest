@@ -111,7 +111,7 @@ export class GameScene extends Scene{
             this.energyLevel--;
             this.energyText.setText('Energy Level:' + this.energyLevel);
             console.log("Energy now is at:", this.energyLevel)
-            this.spawnAllFromJSON(this, "test", {minX : 0, maxX: worldWidth, minY : 0, maxY : worldHeight})
+            this.spawnAllFromJSON("Objects", {minX : 0, maxX: worldWidth, minY : 0, maxY : worldHeight})
         });
 
         this.newDayText = this.add.text(width - 40, height - 60, 'New Day', {
@@ -243,7 +243,7 @@ export class GameScene extends Scene{
                     break;
 
                 default:
-                    console.log("An object that wasn't supposed be here was here...");
+                    console.log("An category that wasn't supposed be here was here... it was: " + category);
                     break;
             }
         }));
