@@ -167,8 +167,8 @@ export class GameScene extends Scene{
     }    
 
     //JSON Methods
-    public spawnAllFromJSON(scene : GameScene, jsonKey : string, bounds = { minX: 0, maxX: 800, minY: 0, maxY: 600 }) {
-        const data = scene.cache.json.get(jsonKey);
+    public spawnAllFromJSON(jsonKey : string, bounds = { minX: 0, maxX: 800, minY: 0, maxY: 600 }) {
+        const data = this.cache.json.get(jsonKey);
         const spawnedObjects: any[] = [];
     
         // Loop through each key (like "enemies", "powerups")
@@ -181,7 +181,7 @@ export class GameScene extends Scene{
                 let y = Phaser.Math.Between(bounds.minY, bounds.maxY);
 
     
-                const gameObject = scene.add.sprite(x, y, spriteKey);
+                const gameObject = this.add.sprite(x, y, spriteKey);
                 switch (category) {
                     case "plants":
                         const seabed = bounds.maxY - Phaser.Math.Between(80, 140);
@@ -214,8 +214,8 @@ export class GameScene extends Scene{
     }
 
 
-    getSpriteGroup(scene : GameScene, jsonKey : string, spriteName : string) {
-    const data = scene.cache.json.get(jsonKey);
+    getSpriteGroup(jsonKey : string, spriteName : string) {
+    const data = this.cache.json.get(jsonKey);
 
     // Loop through each group in the JSON
     for (let groupName in data) {
@@ -227,6 +227,9 @@ export class GameScene extends Scene{
     return null; // not found
 }
 
+    getQuestFromJSON(scene : GameScene, jsonKey : string) {
+        
+    }
 
 
 }
