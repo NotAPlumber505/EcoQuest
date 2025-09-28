@@ -4,16 +4,16 @@ import { Quest } from "../classes/Quest";
 
 export class GameScene extends Scene{
 
-    private  predatorsGroup: Phaser.GameObjects.Group;
-    private  preyGroup: Phaser.GameObjects.Group;
-    private  plantsGroup: Phaser.GameObjects.Group;
-    private  trashGroup: Phaser.GameObjects.Group;
+    public static  predatorsGroup: Phaser.GameObjects.Group;
+    public static  preyGroup: Phaser.GameObjects.Group;
+    public static plantsGroup: Phaser.GameObjects.Group;
+    public static trashGroup: Phaser.GameObjects.Group;
 
     private ensureGroups(){
-        if (!this.predatorsGroup) this.predatorsGroup = this.add.group();
-        if (!this.preyGroup) this.preyGroup = this.add.group();
-        if (!this.plantsGroup) this.plantsGroup = this.add.group();
-        if (!this.trashGroup) this.trashGroup = this.add.group();
+        if (!GameScene.predatorsGroup) GameScene.predatorsGroup = this.add.group();
+        if (!GameScene.preyGroup) GameScene.preyGroup = this.add.group();
+        if (!GameScene.plantsGroup) GameScene.plantsGroup = this.add.group();
+        if (!GameScene.trashGroup) GameScene.trashGroup = this.add.group();
 
     }
 
@@ -52,10 +52,10 @@ export class GameScene extends Scene{
     dayCount: number = 1;
     
     create(){
-        this.predatorsGroup = this.add.group();
-        this.preyGroup = this.add.group();
-        this.trashGroup = this.add.group();
-        this.plantsGroup = this.add.group();
+        GameScene.predatorsGroup = this.add.group();
+        GameScene.preyGroup = this.add.group();
+        GameScene.trashGroup = this.add.group();
+        GameScene.plantsGroup = this.add.group();
 
         const {width, height} = this.scale;
 
@@ -203,16 +203,16 @@ export class GameScene extends Scene{
                     case "plants":
                         const seabed = bounds.maxY - Phaser.Math.Between(80, 140);
                         gameObject.setY(seabed).setDepth (-5);
-                        this.plantsGroup!.add(gameObject);
+                        GameScene.plantsGroup!.add(gameObject);
                         break;
                     case "predators":
-                        this.predatorsGroup!.add(gameObject);
+                        GameScene.predatorsGroup!.add(gameObject);
                         break;
                     case "prey":
-                        this.preyGroup!.add(gameObject);
+                        GameScene.preyGroup!.add(gameObject);
                         break;
                     case "trash" :
-                        this.trashGroup!.add(gameObject);                        
+                        GameScene.trashGroup!.add(gameObject);                        
                         break;
                     default :
                         console.log("An object that wasn't supposed to be created was created...");
@@ -224,7 +224,7 @@ export class GameScene extends Scene{
             });
         }
         });
-        this.preyGroup.getChildren().forEach((children) => {
+        GameScene.preyGroup.getChildren().forEach((children) => {
             console.log(children.name);
         });
         return spawnedObjects;
