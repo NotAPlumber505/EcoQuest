@@ -1,18 +1,22 @@
 import { Game, Scene } from "phaser";
 import { EventBus } from "../EventBus";
 import { Quest } from "../classes/Quest";
+import { clear } from "console";
+import StoreScene from "./StoreScene";
 
 export class GameScene extends Scene{
 
-    public static  predatorsGroup: Phaser.GameObjects.Group;
-    public static  preyGroup: Phaser.GameObjects.Group;
-    public static plantsGroup: Phaser.GameObjects.Group;
-    public static trashGroup: Phaser.GameObjects.Group;
-    public static quest: Quest;
-    public static questUpdated: boolean;
-    public static NewDayJson: JSON;
-    public static NewDayJsonReady: boolean
-    public static questShop : boolean;
+    public static predatorsGroup: Phaser.GameObjects.Group = null!;
+    public static preyGroup: Phaser.GameObjects.Group = null!;
+    public static plantsGroup: Phaser.GameObjects.Group = null!;
+    public static trashGroup: Phaser.GameObjects.Group = null!;
+    public static quest: Quest = null!;
+    public static questUpdated: boolean = false;
+    public static NewDayJson: JSON = {} as JSON;
+    public static NewDayJsonReady: boolean = false;
+    public static questShop: boolean = false;
+    public static storeJSON: string[] = [];
+    public static spritesFromStore : boolean = false;
 
     private ensureGroups(){
         if (!GameScene.predatorsGroup) GameScene.predatorsGroup = this.add.group();
@@ -55,15 +59,16 @@ export class GameScene extends Scene{
     energyLevel: number = 10;
     newDayText: Phaser.GameObjects.Text;
     dayCount: number = 1;
+    biodiversity_risk: Phaser.GameObjects.Text;
     
     create(){
-        GameScene.predatorsGroup = this.add.group();
-        GameScene.preyGroup = this.add.group();
-        GameScene.trashGroup = this.add.group();
-        GameScene.plantsGroup = this.add.group();
-        GameScene.NewDayJsonReady = false;
-        GameScene.questUpdated = false;
-        GameScene.questShop = false;
+        if (!GameScene.predatorsGroup) GameScene.predatorsGroup = this.add.group();
+        if (!GameScene.preyGroup) GameScene.preyGroup = this.add.group();
+        if (!GameScene.trashGroup) GameScene.trashGroup = this.add.group();
+        if (!GameScene.plantsGroup) GameScene.plantsGroup = this.add.group();
+        if (GameScene.NewDayJsonReady === null) GameScene.NewDayJsonReady = false;
+        if (GameScene.questUpdated === null) GameScene.questUpdated = false;
+        if (GameScene.questShop === null) GameScene.questShop = false;
         const {width, height} = this.scale;
 
 
@@ -115,6 +120,8 @@ export class GameScene extends Scene{
             color: '#fff'
         }).setOrigin(0.5).setScrollFactor(0);
 
+
+
         TrashObject.on('pointerdown', () => {
             this.collectedTrash.push(TrashObject);
             TrashObject.destroy();
@@ -122,7 +129,6 @@ export class GameScene extends Scene{
             this.energyLevel--;
             this.energyText.setText('Energy Level:' + this.energyLevel);
             console.log("Energy now is at:", this.energyLevel)
-            this.spawnAllFromJSON("Objects", {minX : 0, maxX: worldWidth, minY : 0, maxY : worldHeight})
         });
 
         this.newDayText = this.add.text(width - 40, height - 60, 'New Day', {
@@ -131,6 +137,11 @@ export class GameScene extends Scene{
             backgroundColor: '#00000080',
             padding: { x: 10, y: 5 }
         }).setOrigin(1,1).setScrollFactor(0).setInteractive();
+
+        this.biodiversity_risk = this.add.text(0, 20, 'biodiversity risk: ' + this.energyLevel, {
+            fontSize: '20px',
+            color: '#fff'
+        }).setOrigin(0.5).setScrollFactor(0);
 
         this.newDayText.on('pointerdown', () => {
             this.energyLevel = 10;
@@ -158,9 +169,11 @@ export class GameScene extends Scene{
 
     update(){
         if(GameScene.NewDayJsonReady){
-
+            
             this.cache.json.add('NewDayJson', GameScene.NewDayJson);
+            this.clearGroups(GameScene.predatorsGroup, GameScene.preyGroup, GameScene.plantsGroup, GameScene.trashGroup);
             this.spawnAllFromJSON("NewDayJson", {minX : 0, maxX: this.background.width, minY : 0, maxY : this.background.height});
+            this.biodiversity_risk.setText('Biodiversity Risk: ' + this.cache.json.get('biodiversity_report')['ecological_risk']);
         }
         if (GameScene.questUpdated) { 
             this.AllowTarget(GameScene.quest.targets, GameScene.quest.quest_type);
@@ -173,7 +186,13 @@ export class GameScene extends Scene{
 
         body.setVelocity(0);
 
-        
+        if (GameScene.spritesFromStore && GameScene.storeJSON && GameScene.storeJSON.length > 0) {
+        // Add storeJSON to cache as a temporary JSON object
+        this.cache.json.add('StoreJSON', { custom: GameScene.storeJSON });
+        this.spawnAllFromJSON('StoreJSON', { minX: 0, maxX: this.background.width, minY: 0, maxY: this.background.height });
+        GameScene.spritesFromStore = false;
+        GameScene.storeJSON = [];
+    }
         
          
         if (this.cursors.left.isDown){
@@ -200,6 +219,7 @@ export class GameScene extends Scene{
 
     //JSON Methods
     public spawnAllFromJSON(jsonKey : string, bounds = { minX: 0, maxX: 800, minY: 0, maxY: 600 }) {
+
         const data = this.cache.json.get(jsonKey);
         const spawnedObjects: any[] = [];
     
@@ -301,10 +321,20 @@ export class GameScene extends Scene{
     }
 
     if (action === "add" || action === "plant") {
-        (this as any).customShop = true;
+        StoreScene.customItems = targets;
+        StoreScene.customShop = true;
     }
 
     
 
     }
+
+    public clearGroups(...groups : Phaser.GameObjects.Group[]) {
+    groups.forEach(group => {
+        group.clear(true, true); 
+        // first "true" = remove children
+        // second "true" = destroy them
+    });
+}
+
 }
