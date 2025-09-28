@@ -24,6 +24,11 @@ export class GameScene extends Scene{
 
 
     //Runs once when the scene is first created (just for initialization)
+    togglePause() {
+        this.scene.pause();
+        this.scene.launch('PauseScene'); 
+    }
+    
     create(){
 
         this.cameras.main.setBackgroundColor(0x00FF00);
@@ -42,7 +47,9 @@ export class GameScene extends Scene{
         // Need to scale the image to match the window 
        background.setDisplaySize(gameWidth,gameHeight);
 
-
+        this.input.keyboard?.on('keydown-P', this.togglePause, this);
+        this.input.keyboard?.on('keydown-ESC', this.togglePause, this);
+        
 
         const kb = this.input.keyboard;
         if (!kb) {

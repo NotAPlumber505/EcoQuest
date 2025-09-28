@@ -40,7 +40,7 @@ export default class StoreScene extends Phaser.Scene {
             color: '#fff'
         }).setOrigin(0.5);
 
-        const BackButton = this.add.image(centerX, centerY, 'BackButton').setScale(4).setInteractive()
+        const BackButton = this.add.image(centerX + 400, centerY + 330, 'BackButton').setScale(2).setInteractive()
         BackButton.on('pointerdown', () => {
             this.scene.start('MainMenu'); // Switch to scene
         });

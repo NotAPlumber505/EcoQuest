@@ -4,6 +4,7 @@ import { GameOver } from './scenes/GameOver';
 import MainMenu from './scenes/MainMenu';
 import { GameScene } from './scenes/GameScene';
 import StoreScene from './scenes/StoreScene';
+import PauseMenu from './scenes/PauseMenu';
 import { AUTO, Game } from 'phaser';
 import { Preloader } from './scenes/Preloader';
 
@@ -31,6 +32,7 @@ const config: Phaser.Types.Core.GameConfig = {
         Preloader,
         MainMenu,
         GameScene,
+        PauseMenu,
         GameOver,
         StoreScene,
     ]
