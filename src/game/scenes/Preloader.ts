@@ -45,7 +45,7 @@ export class Preloader extends Scene
         this.load.image('Turtle', 'TeeTurtle.png');
 
         // Backgrounds
-        this.load.image('CoralBackground','FirstSite.jpg'); // In-game background
+        this.load.image('CoralBackground','Meep.png'); // In-game background
         this.load.image('MainMenuBackground', 'MainMenuBackgroundReef.jpg'); // Main menu background
         this.load.image('startButton', 'StartButton.png'); // Start button for main menu
         this.load.image('storeButton', 'StoreButton.png'); // Store button for main menu
