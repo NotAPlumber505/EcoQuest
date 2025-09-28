@@ -22,7 +22,7 @@ export default class MainMenu extends Phaser.Scene {
         const startButton = this.add.image(centerX, centerY - 75, 'startButton').setScale(8).setInteractive()
 
         startButton.on('pointerdown', () => {
-            this.scene.start('Game'); // Switch to scene
+            this.scene.start('GameScene'); // Switch to scene
         });
 
         //Store Button
@@ -38,10 +38,5 @@ export default class MainMenu extends Phaser.Scene {
             color: '#fff'
         }).setOrigin(0.5);
 
-        const creditsButton = this.add.image(centerX + 420, centerY + 350, 'creditsButton').setScale(1.5).setInteractive()
-
-        creditsButton.on('pointerdown', () => {
-            this.scene.start('CreditsScene'); //Switch to credits
-        });
     }
 }

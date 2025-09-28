@@ -49,8 +49,8 @@ export class Preloader extends Scene
         this.load.image('MainMenuBackground', 'MainMenuBackgroundReef.jpg'); // Main menu background
         this.load.image('startButton', 'StartButton.png'); // Start button for main menu
         this.load.image('storeButton', 'StoreButton.png'); // Store button for main menu
-        this.load.image('QuestButton', 'QuestButton.png'); //Quest button for in-game
-        this.load.image('creditsButton', 'CreditsButton.png'); //Credits button for main menu
+        this.load.image('QuestsButton', 'QuestsButton.png'); //Quest button for in-game
+        this.load.image('BackButton', 'BackButton.png'); //Back button accessible throughout multiple menus
 
         // Trash
         this.load.image('AppleTrash', 'AppleTrash.png');

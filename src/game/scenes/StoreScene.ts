@@ -40,6 +40,11 @@ export default class StoreScene extends Phaser.Scene {
             color: '#fff'
         }).setOrigin(0.5);
 
+        const BackButton = this.add.image(centerX, centerY, 'BackButton').setScale(4).setInteractive()
+        BackButton.on('pointerdown', () => {
+            this.scene.start('MainMenu'); // Switch to scene
+        });
+
         // Title Text
         this.add.text(centerX, centerY - 200, 'Store', {
             fontSize: '48px',
