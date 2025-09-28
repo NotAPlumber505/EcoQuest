@@ -12,6 +12,8 @@ Our mission: **use autonomous AI agents to help game developers generate quests 
 - **Hosting**: [Vercel](https://vercel.com/)
 - **Domain**: TBA
 
+<img width="1362" height="637" alt="Screenshot 2025-09-28 105119" src="https://github.com/user-attachments/assets/f893acd5-5141-4f68-b842-c7c2d342a78a" />
+
 ---
 
 ## 🧩 System Architecture
@@ -67,5 +69,6 @@ For future agent logic (data processing, fine-tuning, etc.), we will include Pyt
 
 ## License
 MIT License © 2025 EcoQuest Team
+
 
 

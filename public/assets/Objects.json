@@ -1,0 +1,6 @@
+{
+"prey" : ["Clownfish","BlueFish","RedFish","YellowFish","Turtle"],
+"trash" : ["AppleTrash","BottleTrash","DuckTrash","SodaTrash","TrashBag"],
+"predators" : ["Dolphin","Eel","Octopus","Shark","Whale"],
+"plants":["Coral"]
+}

@@ -1,76 +1,43 @@
-import { GameObjects, Scene } from 'phaser';
-
-import { EventBus } from '../EventBus';
-
-export class MainMenu extends Scene
-{
-    background: GameObjects.Image;
-    logo: GameObjects.Image;
-    title: GameObjects.Text;
-    logoTween: Phaser.Tweens.Tween | null;
-
-    constructor ()
-    {
-        super('MainMenu');
+export default class MainMenu extends Phaser.Scene {
+    constructor() {
+        super({ key: 'MainMenu' });
     }
 
-    create ()
-    {
-        this.background = this.add.image(512, 384, 'background');
+    create() {
 
-        this.logo = this.add.image(512, 300, 'logo').setDepth(100);
+        const centerX = this.sys.game.config.width as number / 2;
+        const centerY = this.sys.game.config.height as number / 2;
 
-        this.title = this.add.text(512, 460, 'Main Menu', {
-            fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
-            stroke: '#000000', strokeThickness: 8,
-            align: 'center'
-        }).setOrigin(0.5).setDepth(100);
+        // Background
+        const MainMenuBackground = this.add.image(0,0,'MainMenuBackground').setOrigin(0);
+        MainMenuBackground.setDisplaySize(this.sys.game.config.width as number, this.sys.game.config.height as number);
 
-        EventBus.emit('current-scene-ready', this);
-    }
-    
-    changeScene ()
-    {
-        if (this.logoTween)
-        {
-            this.logoTween.stop();
-            this.logoTween = null;
-        }
+        // Title Text
+        this.add.text(centerX, centerY - 200, 'EcoQuest', {
+            fontSize: '48px',
+            color: '#fff'
+        }).setOrigin(0.5);
 
-        this.scene.start('Game');
-    }
+        // Start Button
+        const startButton = this.add.image(centerX, centerY - 75, 'startButton').setScale(8).setInteractive()
 
-    moveLogo (reactCallback: ({ x, y }: { x: number, y: number }) => void)
-    {
-        if (this.logoTween)
-        {
-            if (this.logoTween.isPlaying())
-            {
-                this.logoTween.pause();
-            }
-            else
-            {
-                this.logoTween.play();
-            }
-        } 
-        else
-        {
-            this.logoTween = this.tweens.add({
-                targets: this.logo,
-                x: { value: 750, duration: 3000, ease: 'Back.easeInOut' },
-                y: { value: 80, duration: 1500, ease: 'Sine.easeOut' },
-                yoyo: true,
-                repeat: -1,
-                onUpdate: () => {
-                    if (reactCallback)
-                    {
-                        reactCallback({
-                            x: Math.floor(this.logo.x),
-                            y: Math.floor(this.logo.y)
-                        });
-                    }
-                }
-            });
-        }
+        startButton.on('pointerdown', () => {
+            this.scene.start('GameScene'); // Switch to scene
+        });
+
+        //Store Button
+        const storeButton = this.add.image(centerX, centerY + 65, 'storeButton').setScale(8).setInteractive()
+
+        storeButton.on('pointerdown', () => {
+            this.scene.start('StoreScene'); // Switch to scene
+        });
+
+
+        // Instructions
+        this.add.text(centerX, centerY + 150, 'Click Start to Play', {
+            fontSize: '32px',
+            color: '#fff'
+        }).setOrigin(0.5);
+
     }
 }
