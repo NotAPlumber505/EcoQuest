@@ -1,4 +1,4 @@
-import { GameScene } from "./GameScene";
+import { GameScene } from "./GameScene/GameScene";
 import { Quest }  from "../classes/Quest";
 import { on } from "events";
 export default class LoadingScene extends Phaser.Scene {

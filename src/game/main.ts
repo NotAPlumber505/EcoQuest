@@ -2,7 +2,7 @@ import { Boot } from './scenes/Boot';
 import { GameOver } from './scenes/GameOver';
 // import { Game as MainGame } from './scenes/Game';
 import MainMenu from './scenes/MainMenu';
-import { GameScene } from './scenes/GameScene';
+import { GameScene } from './scenes/GameScene/GameScene';
 import StoreScene from './scenes/StoreScene';
 import PauseMenu from './scenes/PauseMenu';
 import { AUTO, Game } from 'phaser';
